@@ -137,7 +137,10 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// r001 `mountComponent` 核心就是先实例化一个渲染`Watcher`，
+// 在它的回调函数中会调用 `updateComponent` 方法，
+// 在此方法中调用 `vm._render` 方法先生成虚拟 Node，
+// 最终调用 `vm._update` 更新 DOM
 export function mountComponent (
   vm: Component,
   el: ?Element,
@@ -206,6 +209,10 @@ export function mountComponent (
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
+    /* r001 函数最后判断为根节点的时候设置 `vm._isMounted` 为 `true`，
+     表示这个实例已经挂载了，同时执行 `mounted` 钩子函数。
+     这里注意 `vm.$vnode` 表示 Vue 实例的父虚拟 Node，
+     所以它为 `Null` 则表示当前是根 Vue 的实例 */
     vm._isMounted = true
     callHook(vm, 'mounted')
   }

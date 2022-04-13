@@ -22,7 +22,7 @@ if (process.argv[2]) {
     return b.output.file.indexOf('weex') === -1
   })
 }
-
+//! r001从配置文件读取配置，再通过命令行参数对构建配置做过滤
 build(builds)
 
 function build (builds) {

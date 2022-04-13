@@ -108,7 +108,18 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
+  /* r001 所以 `createComponent` 里的代码逻辑会执行到 `baseCtor.extend(Ctor)`，
+  在这里 `baseCtor` 实际上就是 Vue，这个的定义是在最开始初始化 Vue 的阶段，
+  在 `src/core/global-api/index.js` 中的 `initGlobalAPI` 函数有这么一段逻辑
+  Vue.options._base = Vue
 
+  在 `src/core/instance/init.js` 里 Vue 原型上的 `_init` 函数中有这么一段逻辑
+  vm.$options = mergeOptions(
+    resolveConstructorOptions(vm.constructor),
+    options || {},
+    vm
+  )
+*/
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor

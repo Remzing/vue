@@ -716,6 +716,10 @@ export function createPatchFunction (backend) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
+        /* r001 初始化时： 由于我们传入的 `oldVnode` 实际上是一个 DOM container，
+        所以 `isRealElement` 为 true，接下来又通过 `emptyNodeAt` 方法
+        把 `oldVnode` 转换成 `VNode` 对象，然后再调用 `createElm` 方法，
+        这个方法在这里非常重要，来看一下它的实现 */
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform

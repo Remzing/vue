@@ -34,7 +34,14 @@ const resolve = p => {
     return path.resolve(__dirname, '../', p)
   }
 }
-
+/*
+r002
+这里的 `resolve` 函数实现非常简单，它先把 `resolve` 函数传入的参数 `p`
+通过 `/` 做了分割成数组，
+然后取数组第一个元素设置为 `base`。在我们这个例子中，参数 `p` 是
+ `web/entry-runtime.js`，那么 `base` 则为 `web`。
+ `base` 并不是实际的路径，它的真实路径借助了别名的配置，
+ 我们来看一下别名配置的代码，在 `scripts/alias` 中： */
 const builds = {
   // Runtime only (CommonJS). Used by bundlers e.g. Webpack & Browserify
   'web-runtime-cjs-dev': {

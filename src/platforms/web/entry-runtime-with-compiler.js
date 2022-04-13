@@ -1,9 +1,11 @@
 /* @flow */
 
+// Vue 入口文件
 import config from 'core/config'
 import { warn, cached } from 'core/util/index'
 import { mark, measure } from 'core/util/perf'
 
+// 入口01
 import Vue from './runtime/index'
 import { query } from './util/index'
 import { compileToFunctions } from './compiler/index'
@@ -31,7 +33,9 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+
   if (!options.render) {
+    //! r001 如果没有render方法，就会把el或者template字符串转化为render方法
     let template = options.template
     if (template) {
       if (typeof template === 'string') {

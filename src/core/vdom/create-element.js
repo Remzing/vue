@@ -87,11 +87,19 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+  // r001 根据 `normalizationType` 的不同，`children` 变成了一个类型为 VNode 的 Array
+  // 规范化 children 变成了一个类型为 VNode 的 Array
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
     children = simpleNormalizeChildren(children)
   }
+  /* 这里先对 `tag` 做判断，如果是 `string` 类型，则接着判断如果是内置的一些节点，
+  则直接创建一个普通 VNode，如果是为已注册的组件名，则通过 `createComponent`
+  创建一个组件类型的 VNode，否则创建一个未知的标签的 VNode。
+  如果 `tag` 是一个 `Component` 类型，则直接调用 `createComponent`
+  创建一个组件类型的 VNode 节点。对于 `createComponent` 创建组件类型的 VNode 的过程，
+  我们之后会去介绍，本质上它还是返回了一个 VNode */
   let vnode, ns
   if (typeof tag === 'string') {
     let Ctor
