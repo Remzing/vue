@@ -122,8 +122,10 @@ export function createComponent (
 */
   const baseCtor = context.$options._base
 
+
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+    //! r001 fn01 构造子类构造函数
     Ctor = baseCtor.extend(Ctor)
   }
 
@@ -194,9 +196,11 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  //! r001 fn02 安装组件钩子函数
   installComponentHooks(data)
 
   // return a placeholder vnode
+  //! r001 fn03 实例化 VNode
   const name = Ctor.options.name || tag
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
@@ -212,7 +216,7 @@ export function createComponent (
   if (__WEEX__ && isRecyclableComponent(vnode)) {
     return renderRecyclableComponentTemplate(vnode)
   }
-
+  // r001 返回的是组件 `vnode`
   return vnode
 }
 
@@ -235,7 +239,10 @@ export function createComponentInstanceForVnode (
   }
   return new vnode.componentOptions.Ctor(options)
 }
-
+/**  r001 整个 `installComponentHooks` 的过程就是把 `componentVNodeHooks` 的钩子函数合并到 `data.hook` 中，
+在 VNode 执行 `patch` 的过程中执行相关的钩子函数，具体的执行我们稍后在介绍 `patch` 过程中会详细介绍。
+这里要注意的是合并策略，在合并过程中，如果某个时机的钩子已经存在 `data.hook` 中，
+那么通过执行 `mergeHook` 函数做合并，这个逻辑很简单，就是在最终执行的时候，依次执行这两个钩子函数即可 */
 function installComponentHooks (data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
