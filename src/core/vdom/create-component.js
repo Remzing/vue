@@ -38,6 +38,7 @@ const componentVNodeHooks = {
     if (
       vnode.componentInstance &&
       !vnode.componentInstance._isDestroyed &&
+      // r001 keepAlive 缓存组件的情况
       vnode.data.keepAlive
     ) {
       // kept-alive components, treat as a patch
@@ -48,6 +49,12 @@ const componentVNodeHooks = {
         vnode,
         activeInstance
       )
+      /**
+       * 由于组件初始化的时候是不传 el 的，因此组件是自己接管了 `$mount` 的过程，
+       * 这个过程的主要流程在上一章介绍过了，回到组件 `init` 的过程，`componentVNodeHooks` 的 `init` 钩子函数，
+       * 在完成实例化的 `_init` 后，接着会执行 `child.$mount(hydrating ? vnode.elm : undefined, hydrating)` 。这里 `hydrating` 为 true 一般是服务端渲染的情况，我们只考虑客户端渲染，所以这里 `$mount` 相当于执行 `child.$mount(undefined, false)`，它最终会调用 `mountComponent` 方法，进而执行 `vm._render()` 方法：
+       */
+      // ! 最终会调用 `mountComponent` 方法，进而执行 `vm._render()` 方法
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -97,7 +104,10 @@ const componentVNodeHooks = {
 }
 
 const hooksToMerge = Object.keys(componentVNodeHooks)
-
+/**
+ * r002组件注册，普通组件，异步组件
+ * Ctor 可以为func 为异步执行
+ */
 export function createComponent (
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
@@ -138,7 +148,7 @@ export function createComponent (
     return
   }
 
-  // async component
+  //! async component r002 异步组件注册
   let asyncFactory
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor

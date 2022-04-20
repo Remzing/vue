@@ -141,10 +141,12 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+    // 是组件类型的vnode 就return
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
-
+    // 如果组件的根节点是个普通元素，那么 `vm._vnode` 也是普通的 `vnode`，
+    // 这里 `createComponent(vnode, insertedVnodeQueue, parentElm, refElm)` 的返回值是 false。
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
@@ -696,7 +698,7 @@ export function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  // ! patch
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)

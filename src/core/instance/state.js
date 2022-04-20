@@ -149,6 +149,7 @@ function initData (vm: Component) {
     }
   }
   // observe data
+  // ! observe` 方法的作用就是给非 VNode 的对象类型数据添加一个 `Observer 如果已经添加过则直接返回，否则在满足一定条件下去实例化一个 `Observer` 对象实例。接下来我们来看一下 `Observer` 的作用
   observe(data, true /* asRootData */)
 }
 

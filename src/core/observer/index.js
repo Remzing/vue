@@ -33,6 +33,8 @@ export function toggleObserving (value: boolean) {
  * object. Once attached, the observer converts the target
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
+ * r003 `Observer` 是一个类，它的作用是给对象的属性添加 getter 和 setter，
+ * 用于依赖收集和派发更新
  */
 export class Observer {
   value: any;
@@ -43,6 +45,10 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    /*
+    def` 函数是一个非常简单的`Object.defineProperty` 的封装，这就是为什么我在开发中
+    输出 `data` 上对象类型的数据，会发现该对象多了一个 `__ob__` 的属性
+     */
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       if (hasProto) {
@@ -160,6 +166,7 @@ export function defineReactive (
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
+        //! r003 依赖收集
         dep.depend()
         if (childOb) {
           childOb.dep.depend()
@@ -187,7 +194,9 @@ export function defineReactive (
       } else {
         val = newVal
       }
+      // 如果 `shallow` 为 false 的情况，会对新设置的值变成一个响应式对象
       childOb = !shallow && observe(newVal)
+      //! r003 派发更新
       dep.notify()
     }
   })

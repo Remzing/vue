@@ -22,6 +22,17 @@ export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
 export function setActiveInstance(vm: Component) {
+  /* r002 这个 `activeInstance` 作用就是保持当前上下文的 Vue 实例，
+  它是在 `lifecycle` 模块的全局变量，定义是 `export let activeInstance: any = null`，
+  并且在之前我们调用 `createComponentInstanceForVnode` 方法的时候从 `lifecycle` 模块获取
+   */
+  /* 在 `vm._update` 的过程中，把当前的 `vm` 赋值给 `activeInstance`，
+  同时通过 `const prevActiveInstance = activeInstance` 用 `prevActiveInstance`
+  保留上一次的 `activeInstance`。实际上，`prevActiveInstance` 和当前的 `vm` 是一个父子关系，
+  当一个 `vm` 实例完成它的所有子树的 patch 或者 update 过程后，`activeInstance` 会回到它的父实例，
+  这样就完美地保证了 `createComponentInstanceForVnode` 整个深度遍历过程中，
+  我们在实例化子组件的时候能传入当前子组件的父 Vue 实例，并在 `_init` 的过程中，
+  通过 `vm.$parent` 把这个父子关系保留。 */
   const prevActiveInstance = activeInstance
   activeInstance = vm
   return () => {
@@ -31,7 +42,10 @@ export function setActiveInstance(vm: Component) {
 
 export function initLifecycle (vm: Component) {
   const options = vm.$options
-
+  /* r002 可以看到 `vm.$parent` 就是用来保留当前 `vm` 的父实例，
+  并且通过 `parent.$children.push(vm)` 来把当前的 `vm`
+  存储到父实例的 `$children` 中。
+   */
   // locate first non-abstract parent
   let parent = options.parent
   if (parent && !options.abstract) {
@@ -199,6 +213,7 @@ export function mountComponent (
   // component's mounted hook), which relies on vm._watcher being already defined
   new Watcher(vm, updateComponent, noop, {
     before () {
+      //! r002 注意这里有个判断，也就是在组件已经 `mounted` 之后，才会去调用这个钩子函数
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
       }

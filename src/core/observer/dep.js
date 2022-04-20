@@ -11,9 +11,11 @@ let uid = 0
  * directives subscribing to it.
  */
 export default class Dep {
-  static target: ?Watcher;
+  /* r003 这里需要特别注意的是它有一个静态属性 `target`，这是一个全局唯一 `Watcher`，
+  这是一个非常巧妙的设计，因为在同一时间只能有一个全局的 `Watcher` 被计算 */
+  static target: ?Watcher;// 依赖收集时的 Watcher 引用
   id: number;
-  subs: Array<Watcher>;
+  subs: Array<Watcher>;// Watcher 数组
 
   constructor () {
     this.id = uid++
@@ -28,6 +30,7 @@ export default class Dep {
     remove(this.subs, sub)
   }
 
+  //Watcher 和 Dep 相互保存引用
   depend () {
     if (Dep.target) {
       Dep.target.addDep(this)

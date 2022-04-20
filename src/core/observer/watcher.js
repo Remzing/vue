@@ -114,10 +114,13 @@ export default class Watcher {
     } finally {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
+      //! 这个是要递归去访问 `value`，触发它所有子项的 `getter`，这个之后会详细讲
       if (this.deep) {
         traverse(value)
       }
+      //! 实际上就是把 `Dep.target` 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染`Dep.target` 也需要改变
       popTarget()
+      // 依赖清空
       this.cleanupDeps()
     }
     return value

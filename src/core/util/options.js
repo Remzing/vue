@@ -382,6 +382,7 @@ function assertObjectType (name: string, value: any, vm: ?Component) {
 }
 
 /**
+ * r002 多种合并策略
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
  */
