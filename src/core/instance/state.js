@@ -56,7 +56,13 @@ export function initState (vm: Component) {
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
+  /* r004 计算属性的初始化是发生在 Vue 实例初始化阶段的 `initState` 函数中，
+  执行了 `if (opts.computed) initComputed(vm, opts.computed) */
   if (opts.computed) initComputed(vm, opts.computed)
+  /*
+  侦听属性的初始化也是发生在 Vue 的实例初始化阶段的 `initState` 函数中，
+  在 `computed` 初始化之后，执行了
+   */
   if (opts.watch && opts.watch !== nativeWatch) {
     initWatch(vm, opts.watch)
   }
@@ -86,6 +92,7 @@ function initProps (vm: Component, propsOptions: Object) {
           vm
         )
       }
+      //! r005 响应式
       defineReactive(props, key, value, () => {
         if (!isRoot && !isUpdatingChildComponent) {
           warn(
@@ -103,6 +110,7 @@ function initProps (vm: Component, propsOptions: Object) {
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
+    //! r005 代理
     if (!(key in vm)) {
       proxy(vm, `_props`, key)
     }
@@ -167,7 +175,9 @@ export function getData (data: Function, vm: Component): any {
 }
 
 const computedWatcherOptions = { lazy: true }
-
+/**
+ * 计算属性 初始化
+ *  */
 function initComputed (vm: Component, computed: Object) {
   // $flow-disable-line
   const watchers = vm._computedWatchers = Object.create(null)
@@ -186,6 +196,9 @@ function initComputed (vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
+
+      /* 这个 `watcher` 和渲染 `watcher` 有一点很大的不同，它是一个 `computed watcher`
+      因为 `const computedWatcherOptions = { computed: true }； lazy: true ` */
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -356,6 +369,7 @@ export function stateMixin (Vue: Class<Component>) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
+    // r004 这是一个 `user watcher`
     options.user = true
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {

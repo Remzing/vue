@@ -540,21 +540,36 @@ export function createPatchFunction (backend) {
       vnode.componentInstance = oldVnode.componentInstance
       return
     }
-
+    // ! r005 1.执行 `prepatch` 钩子函数
     let i
     const data = vnode.data
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
       i(oldVnode, vnode)
     }
-
     const oldCh = oldVnode.children
     const ch = vnode.children
+    // ! r005 2.执行 `update` 钩子函数
     if (isDef(data) && isPatchable(vnode)) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
+    // ! r005 3.完成 `patch` 过程
+    /*
+    如果 `vnode` 是个文本节点且新旧文本不相同，则直接替换文本内容。如果不是文本节点，
+    则判断它们的子节点，并分了几种情况处理：
+
+    1. `oldCh` 与 `ch` 都存在且不相同时，使用 `updateChildren` 函数来更新子节点，这个后面重点讲。
+
+    2.如果只有 `ch` 存在，表示旧节点不需要了。如果旧的节点是文本节点则先将节点的文本清除，
+    然后通过 `addVnodes` 将 `ch` 批量插入到新节点 `elm` 下。
+
+    3.如果只有 `oldCh` 存在，表示更新的是空节点，则需要将旧的节点通过 `removeVnodes` 全部清除。
+
+    4.当只有旧节点是文本节点的时候，则清除其节点文本内容。
+     */
     if (isUndef(vnode.text)) {
       if (isDef(oldCh) && isDef(ch)) {
+        //!!! 整个 `pathVnode` 过程中，最复杂的就是 `updateChildren` 方法
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
       } else if (isDef(ch)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -570,6 +585,7 @@ export function createPatchFunction (backend) {
     } else if (oldVnode.text !== vnode.text) {
       nodeOps.setTextContent(elm, vnode.text)
     }
+    // ! r005 4.执行 `postpatch` 钩子函数; 它是组件自定义的钩子函数，有则执行
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.postpatch)) i(oldVnode, vnode)
     }

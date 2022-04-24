@@ -18,6 +18,7 @@ function flushCallbacks () {
     copies[i]()
   }
 }
+//! r004 版本不再优先用了宏任务的方式做执行，优先使用Promise.then。如下：
 
 // Here we have async deferring wrappers using microtasks.
 // In 2.5 we used (macro) tasks (in combination with microtasks).
@@ -83,7 +84,8 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     setTimeout(flushCallbacks, 0)
   }
 }
-
+/* 在浏览器环境中，常见的 macro task 有 setTimeout、MessageChannel、
+postMessage、setImmediate；常见的 micro task 有 MutationObsever 和 Promise.then */
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
   callbacks.push(() => {

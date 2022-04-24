@@ -17,7 +17,19 @@ type PropOptions = {
   required: ?boolean,
   validator: ?Function
 };
-
+/**
+ * 这里的 `propsOptions` 就是我们定义的 `props` 在规范后生成的 `options.props`
+ *  对象，`propsData` 是从父组件传递的 `prop` 数据。所谓校验的目的就是
+ * 检查一下我们传递的数据是否满足 `prop`的定义规范
+ *
+ * `validateProp` 主要就做 3 件事情：处理 `Boolean` 类型的数据，
+ * 处理默认数据，`prop` 断言，并最终返回 `prop` 的值
+ * @param {*} key
+ * @param {*} propOptions
+ * @param {*} propsData
+ * @param {*} vm
+ * @returns
+ */
 export function validateProp (
   key: string,
   propOptions: Object,
@@ -28,6 +40,7 @@ export function validateProp (
   const absent = !hasOwn(propsData, key)
   let value = propsData[key]
   // boolean casting
+  // `getTypeIndex` 函数就是找到 `type` 和 `expectedTypes` 匹配的索引并返回
   const booleanIndex = getTypeIndex(Boolean, prop.type)
   if (booleanIndex > -1) {
     if (absent && !hasOwn(prop, 'default')) {
