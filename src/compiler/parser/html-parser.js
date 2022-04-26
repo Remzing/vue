@@ -178,7 +178,9 @@ export function parseHTML (html, options) {
 
   // Clean up any remaining tags
   parseEndTag()
-
+  /**
+   *  roo5 在匹配的过程中会利用 `advance` 函数不断前进整个模板字符串，直到字符串末尾。
+   */
   function advance (n) {
     index += n
     html = html.substring(n)

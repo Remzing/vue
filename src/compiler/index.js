@@ -12,10 +12,14 @@ export const createCompiler = createCompilerCreator(function baseCompile (
   template: string,
   options: CompilerOptions
 ): CompiledResult {
+  //! 真正的编译过程都在这个 `baseCompile` 函数里执行
+  //! r005 01 解析模板字符串生成 AST
   const ast = parse(template.trim(), options)
   if (options.optimize !== false) {
+    //! r005 02 优化语法树
     optimize(ast, options)
   }
+  //! r005 03 生成代码
   const code = generate(ast, options)
   return {
     ast,

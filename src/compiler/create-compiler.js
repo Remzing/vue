@@ -58,6 +58,7 @@ export function createCompilerCreator (baseCompile: Function): Function {
 
       finalOptions.warn = warn
 
+      // 真正的编译过程都在这个 `baseCompile` 函数里执行
       const compiled = baseCompile(template.trim(), finalOptions)
       if (process.env.NODE_ENV !== 'production') {
         detectErrors(compiled.ast, warn)
@@ -66,7 +67,12 @@ export function createCompilerCreator (baseCompile: Function): Function {
       compiled.tips = tips
       return compiled
     }
-
+    /*
+    可以看到该方法返回了一个 `createCompiler` 的函数，它接收一个 `baseOptions` 的参数，
+    返回的是一个对象，包括 `compile` 方法属性和 `compileToFunctions` 属性，
+    这个 `compileToFunctions` 对应的就是 `$mount` 函数调用的 `compileToFunctions` 方法，
+    它是调用 `createCompileToFunctionFn` 方法的返回值，我们接下来看一下 `createCompileToFunctionFn` 方法
+     */
     return {
       compile,
       compileToFunctions: createCompileToFunctionFn(compile)

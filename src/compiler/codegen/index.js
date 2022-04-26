@@ -45,6 +45,8 @@ export function generate (
   options: CompilerOptions
 ): CodegenResult {
   const state = new CodegenState(options)
+  // `generate` 函数首先通过 `genElement(ast, state)` 生成 `code`，
+  // 再把 `code` 用 `with(this){return ${code}}}` 包裹起来
   // fix #11483, Root level <script> tags should not be rendered.
   const code = ast ? (ast.tag === 'script' ? 'null' : genElement(ast, state)) : '_c("div")'
   return {
